@@ -1,10 +1,13 @@
-sprite-animation-layer
-======================
+sprite-animation-layer for Objective-C
+======================================
 
 Animate a sprite in CALayer
 
 Configuration
 -------------
+
+Make sure you include the 'QuartzCore.framework'. Go to your target, and add it by pressing the '+' icon in the 'Linked Frameworks and Libraries' section.
+
 
 ```objc
 // setup sprite source image
