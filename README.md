@@ -33,6 +33,6 @@ spriteAnimation.position = CGPointMake(self.view.frame.size.width/2,
 [spriteAnimation playSpriteAnimationWithName:@"default" atFramerate:12 looping:YES];
 
 // stop animation
-// [spriteAnimation stop];
+// [spriteAnimation stopSpriteAnimation];
 ```
 
