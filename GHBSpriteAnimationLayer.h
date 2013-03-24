@@ -36,41 +36,42 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 @interface GHBSpriteAnimationLayer : CALayer
 {
-    int numberOfFrames;
-    int framesPerSecond;
+    NSMutableDictionary *spriteAnimations;
     
-    NSArray *frames;
 }
 
-@property (assign, nonatomic) int numberOfFrames;
-@property (assign, nonatomic) int framesPerSecond;
+@property (readwrite, nonatomic) NSMutableDictionary *spriteAnimations;
 
-@property (readwrite, copy, nonatomic) NSArray *frames;
 
 /**
- Adds a sprite to CALayer ans shows first frame of sprite
+ Init with sprite ref & add to CALayer
  
  @param spriteRef       CGImageRef of sprite
  @param displaySize     Size of the first frame to show
  @param zoom            Size of image / display size (use 2 for @2x files)
- @param numberOfFrames  Number of frames in sprite
+
  */
-- (void) addSprite:(CGImageRef)spriteRef
-     withFrameSize:(CGSize)displaySize
-          withZoom:(int)zoom
-        withFrames:(int)numberOfFrames;
+- (id) initWithSprite:(CGImageRef)spriteRef withSize:(CGSize)displaySize withZoom:(int)zoom;
+
+/**
+ Adds a animation to the sprite
+ @param name            Name of sprite animation
+ @param frames          Number of frames in sprite, 1,2,3,0 (always end with 0)
+ */
+- (void) addSpriteAnimationWithName:(NSString *)name
+                         withFrames:(int)firstFrame,...;
 
 /**
  Plays animation
- 
- @param fps     Framerate
- @param loop    Set to YES for looping of animation
+ @param name            Name of sprite animation
+ @param fps             Framerate
+ @param loop            Set to YES for looping of animation
  */
-- (void) playAtFramerate:(int)fps looping:(BOOL)loop;
+- (void) playSpriteAnimationWithName:(NSString *)name atFramerate:(int)fps looping:(BOOL)loop;
 
 /**
  Stops animation
  */
-- (void) stop;
+- (void) stopSpriteAnimation;
 
 @end

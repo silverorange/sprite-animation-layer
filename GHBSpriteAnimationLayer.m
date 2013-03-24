@@ -35,55 +35,69 @@
 #import "GHBSpriteAnimationLayer.h"
 
 @implementation GHBSpriteAnimationLayer
-@synthesize numberOfFrames, framesPerSecond, frames;
+@synthesize spriteAnimations;
+
+- (id) initWithSprite:(CGImageRef)spriteRef withSize:(CGSize)displaySize withZoom:(int)zoom
+{
+    if((self = [super init])) {
+        // sprite animations dict
+        self.spriteAnimations = [NSMutableDictionary dictionary];
+        
+        // set contents to spriteRef
+        self.contents = (__bridge id)(spriteRef);
+        
+        // set Frame to displaySize
+        self.frame = CGRectMake(0, 0, displaySize.width, displaySize.height);
+        
+        // set content rect for first frame
+        CGSize frameSize = CGSizeMake(displaySize.width*zoom/CGImageGetWidth(spriteRef),
+                                      displaySize.height*zoom/CGImageGetHeight(spriteRef));
+        self.contentsRect = CGRectMake(0, 0, frameSize.width, frameSize.height);
+    }
+    
+    return self;
+}
 
 // add sprite for animation
-- (void) addSprite:(CGImageRef)spriteRef
-     withFrameSize:(CGSize)displaySize
-          withZoom:(int)zoom
-        withFrames:(int)numFrames
+- (void) addSpriteAnimationWithName:(NSString *)name
+                         withFrames:(int)firstFrame,...
 {
-    self.numberOfFrames = numFrames;
-    
-    // set Frame to displaySize
-    self.frame = CGRectMake(0, 0, displaySize.width, displaySize.height);
-    
-    // set content rect for first frame
-    CGSize frameSize = CGSizeMake(displaySize.width*zoom/CGImageGetWidth(spriteRef),
-                                  displaySize.height*zoom/CGImageGetHeight(spriteRef));
-    self.contentsRect = CGRectMake(0, 0, frameSize.width, frameSize.height);
-    
     // frames
-    int frameNumber = 1;
-    NSMutableArray *f = [NSMutableArray arrayWithCapacity:numberOfFrames];
-    while (frameNumber <= numFrames) {
-        CGRect rect = CGRectMake(
-               ((frameNumber - 1) % (int)(1/self.contentsRect.size.width)) * self.contentsRect.size.width,
-               ((frameNumber - 1) / (int)(1/self.contentsRect.size.width)) * self.contentsRect.size.height,
-                                  self.contentsRect.size.width, self.contentsRect.size.height);
-        
-        [f addObject:[NSValue valueWithCGRect:rect]];
-        frameNumber++;
-    }
-    self.frames = [f copy];
+    NSMutableArray *frames = [NSMutableArray array];
     
-    // set contents to spriteRef
-    self.contents = (__bridge id)(spriteRef);
+    va_list args;
+    va_start(args, firstFrame);
+    for (; firstFrame != 0; firstFrame = va_arg(args, int)) {
+        CGRect rect = CGRectMake(
+                                 ((firstFrame - 1) % (int)(1/self.contentsRect.size.width)) * self.contentsRect.size.width,
+                                 ((firstFrame - 1) / (int)(1/self.contentsRect.size.width)) * self.contentsRect.size.height,
+                                 self.contentsRect.size.width, self.contentsRect.size.height);
+        
+        [frames addObject:[NSValue valueWithCGRect:rect]];
+    }
+    va_end(args);
+
+    // Setup CABasicAnimation
+    CAKeyframeAnimation *anim = [CAKeyframeAnimation animationWithKeyPath:@"contentsRect"];
+    
+    // Set values of content rects
+    anim.values = frames;
+    
+    // save animation
+    [self.spriteAnimations setObject:anim forKey:name];
+
+    
 }
 
 // play animation
-- (void) playAtFramerate:(int)fps looping:(BOOL)loop
+- (void) playSpriteAnimationWithName:(NSString *)name atFramerate:(int)fps looping:(BOOL)loop
 {
-    self.framesPerSecond = fps;
-    
-    // Setup CABasicAnimation
-    CAKeyframeAnimation *anim = [CAKeyframeAnimation animationWithKeyPath:@"contentsRect"];
-
-    // Set values of content rects
-    anim.values = self.frames;
+    CAKeyframeAnimation *anim = [self.spriteAnimations objectForKey:name];
+    if (anim == nil)
+        return;
     
     // Set up duration
-    anim.duration = (float)self.frames.count / self.framesPerSecond;
+    anim.duration = (float)anim.values.count / fps;
     
     // animation loop
     if (loop)
@@ -93,7 +107,6 @@
     anim.fillMode = kCAFillModeForwards;
     anim.removedOnCompletion = NO;
     anim.calculationMode = kCAAnimationDiscrete;
-
     
     // start
     anim.delegate = self;
@@ -102,12 +115,11 @@
 }
 
 // Stop animation
-- (void) stop
+- (void) stopSpriteAnimation
 {
     if([self animationForKey:@"GHBSpriteAnimation"]) {
         [self removeAnimationForKey:@"GHBSpriteAnimation"];
     }
-    NSLog(@"sdf");
 }
 
 
