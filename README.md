@@ -18,8 +18,7 @@ CGSize displaySize = CGSizeMake( 120, 124 ); // size of one frame
 
 // setup GHBSpriteAnimationLayer
 GHBSpriteAnimationLayer *spriteAnimation = [[GHBSpriteAnimationLayer alloc] initWithSprite:imgRef
-                                                                                  withSize:displaySize
-                                                                                  withZoom:2];
+                                                                                  withSize:displaySize];
                                                                                   
 // add to self.view.layer
 spriteAnimation.position = CGPointMake(self.view.frame.size.width/2,
