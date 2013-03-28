@@ -37,7 +37,7 @@
 @implementation GHBSpriteAnimationLayer
 @synthesize spriteAnimations;
 
-- (id) initWithSprite:(CGImageRef)spriteRef withSize:(CGSize)displaySize withZoom:(int)zoom
+- (id) initWithSprite:(CGImageRef)spriteRef withSize:(CGSize)displaySize
 {
     if((self = [super init])) {
         // sprite animations dict
@@ -50,8 +50,10 @@
         self.frame = CGRectMake(0, 0, displaySize.width, displaySize.height);
         
         // set content rect for first frame
-        CGSize frameSize = CGSizeMake(displaySize.width*zoom/CGImageGetWidth(spriteRef),
-                                      displaySize.height*zoom/CGImageGetHeight(spriteRef));
+        float zoom = CGImageGetWidth(spriteRef)/displaySize.width;
+        CGSize frameSize = CGSizeMake((displaySize.width*zoom)/CGImageGetWidth(spriteRef),
+                                      (displaySize.height*zoom)/CGImageGetHeight(spriteRef));
+        
         self.contentsRect = CGRectMake(0, 0, frameSize.width, frameSize.height);
     }
     

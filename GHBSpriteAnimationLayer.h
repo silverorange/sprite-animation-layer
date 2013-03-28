@@ -48,10 +48,9 @@ OTHER DEALINGS IN THE SOFTWARE.
  
  @param spriteRef       CGImageRef of sprite
  @param displaySize     Size of the first frame to show
- @param zoom            Size of image / display size (use 2 for @2x files)
 
  */
-- (id) initWithSprite:(CGImageRef)spriteRef withSize:(CGSize)displaySize withZoom:(int)zoom;
+- (id) initWithSprite:(CGImageRef)spriteRef withSize:(CGSize)displaySize;
 
 /**
  Adds a animation to the sprite
